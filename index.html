@@ -3,18 +3,66 @@
   <head>
     <meta charset="UTF-8" />
     <title>Recipe Box</title>
+    <link href="css/style.css" rel="stylesheet" />
+    <!--
     <script src="https://unpkg.com/react@latest/dist/react.js"></script>
     <script src="https://unpkg.com/react-dom@latest/dist/react-dom.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    -->
+    <script src="js/react.js"></script>
+    <script src="js/react-dom.js"></script>
+    <script src="js/babel.min.js"></script>
   </head>
   <body>
     <div id="root"></div>
     <script type="text/babel">
 
-      ReactDOM.render(
-        <h1>Recipe Box</h1>,
-        document.getElementById('root')
-      );
+    let recipesList = [ {
+      "name": "Cookies",
+      "ingredients": ["butter", "flour", "eggs", "vanilla", "sugar", "milk"]
+    }]
+
+    class Page extends React.Component {
+      render() {
+        return (
+           <div className="page">
+            <header>
+              <h1>The Most Wonderful Recipe Box!</h1>
+            </header>
+            <div className="recipesList">
+            {recipesList.map((recipe) => {
+              return (
+                <Recipe name={recipe.name} ingredients={recipe.ingredients} />
+              )})
+            }
+            </div>
+            <footer>
+            <p>2018 - Made with love and perseverance.</p>
+            </footer>
+           </div>
+        )
+      }
+    }
+
+    function Recipe(props){
+      return (
+        <div className="recipe">
+          <div className="name">
+            <h2>{props.name}</h2>
+          </div>
+          <div className="ingredients">
+          <h3>Ingredients</h3>
+          {props.ingredients.map((ingr) => {
+            return (<p>{ingr}</p>)            
+          })}
+          </div>
+        </div>
+      )
+    }
+
+    ReactDOM.render(<Page/>,
+      document.getElementById('root')
+    );
 
     </script>
   </body>
