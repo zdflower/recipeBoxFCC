@@ -1,0 +1,41 @@
+html {
+  position: relative;
+  min-height: 100%;
+  background: purple; }
+
+body {
+  margin: 0;
+  margin-bottom: 40px; }
+
+.page header {
+  padding-left: 20px;
+  color: #FF7D9B; }
+.page footer {
+  height: 40px;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  color: #FF7D9B; }
+
+.recipesList {
+  position: relative;
+  left: 25%; }
+
+.recipe {
+  border: 1px solid #FF7D9B;
+  background: white;
+  width: 50%;
+  margin-bottom: 20px; }
+  .recipe p,
+  .recipe h2 {
+    color: #FF7D9B;
+    padding-left: 5px; }
+  .recipe p,
+  .recipe h3 {
+    padding-left: 10px; }
+  .recipe h2 {
+    border: 1px solid #FF7D9B;
+    background: purple; }
+
+/*# sourceMappingURL=style.css.map */
