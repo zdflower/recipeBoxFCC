@@ -38,4 +38,15 @@ body {
     border: 1px solid #FF7D9B;
     background: purple; }
 
+.newRecipeForm {
+  position: absolute;
+  background: #FF7D9B;
+  color: purple;
+  width: 60%;
+  height: 100px;
+  top: 30%;
+  left: 20%;
+  z-index: 1;
+  box-shadow: 0 0 1em 1em #ccc; }
+
 /*# sourceMappingURL=style.css.map */

@@ -54,3 +54,15 @@ body {
         background: $mainBackground;
     }
 }
+
+.newRecipeForm {
+    position: absolute;
+    background: $rosaChicle;
+    color: $mainBackground;
+    width: 60%;
+    height: 100px;
+    top: 30%;
+    left: 20%;
+    z-index: 1;
+    box-shadow: 0 0 1em 1em #ccc;
+}
