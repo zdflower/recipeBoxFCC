@@ -5,15 +5,15 @@
     <meta charset="UTF-8" />
     <title>Recipe Box</title>
     <link href="css/style.css" rel="stylesheet" />
-
+<!--
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
-<!--   
+  -->
     <script src="js/react.js"></script>
     <script src="js/react-dom.js"></script>
     <script src="js/babel.min.js"></script>
--->
+
 </head>
 
 <body>
@@ -25,7 +25,9 @@
           constructor() { 
             super();
             this.state = { recipes: recipesList,
-                           showRecipes: [] };
+                           showRecipes: [],
+                           showAddRecipe: false
+                       };
             this.setState({showRecipes : this.state.recipes.map((r) => { return false})}); 
           }
 
@@ -34,6 +36,15 @@
             showRecipes[i] = !showRecipes[i]; // niega lo que había
             this.setState({ showRecipes : showRecipes });
           }
+
+          handleOnClickAddRecipeView() {
+            this.setState({ showAddRecipe : true });
+      }
+
+         handleAddRecipe() {
+         /* agregar el código para efectivamente guardar la nueva receta */
+       this.setState({ showAddRecipe : false });
+     }
 
           render() {
             return (
@@ -44,7 +55,12 @@
             <div className="recipesList">
                 {recipesList.map((recipe, i) => { return (
                 <Recipe name={recipe.name} ingredients={recipe.ingredients} onClickShowIng={() => this.handleOnClickShowIng(i)} showIng={this.state.showRecipes[i]} key={recipe.name + i} /> )}) }
+                <button onClick={() => this.handleOnClickAddRecipeView() }>Add recipe</button>
             </div>
+            { (this.state.showAddRecipe) ?
+               <AddRecipe onClickAddRecipe={() => this.handleAddRecipe()}/> : 
+               <div></div>  
+            }
             <footer>
                 <p>2018 - Made with love and perseverance.</p>
             </footer>
@@ -60,17 +76,29 @@
             <Ingredients ingredients={props.ingredients} /> :
             <div></div> }
         </div>
-        ) }
+        )
+        }
 
         function Ingredients (props) { 
           return (
         <div className="ingredients">
             <h3>Ingredients</h3> {props.ingredients.map((ingr) => { return (
             <p key={ingr}>{ingr}</p>) })}
-        </div> ) }
+        </div> ) 
+        }
+
+        function AddRecipe(props) {
+            return (
+            <div className="newRecipeForm">
+                New recipe form
+                <button onClick={props.onClickAddRecipe}>OK</button>
+            </div>
+            )
+        }
 
         ReactDOM.render(
         <Page/>, document.getElementById('root') );
+
     </script>
 </body>
 
