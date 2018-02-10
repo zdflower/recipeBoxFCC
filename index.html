@@ -1,70 +1,77 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <title>Recipe Box</title>
     <link href="css/style.css" rel="stylesheet" />
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
-<!--
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+<!--   
     <script src="js/react.js"></script>
     <script src="js/react-dom.js"></script>
     <script src="js/babel.min.js"></script>
-    -->
-  </head>
-  <body>
+-->
+</head>
+
+<body>
     <div id="root"></div>
     <script type="text/babel">
+        let recipesList = [{ "name": "Vanilla Cookies", "ingredients": ["butter", "flour", "eggs", "vanilla", "sugar", "milk"] }, { "name": "Chocolate Cookies", "ingredients": ["butter", "flour", "eggs", "chocolate", "sugar", "milk"] }, { "name": "Algarroba Cookies", "ingredients": ["butter", "flour", "eggs", "algarroba flour", "sugar", "milk"] }, { "name": "Cinamon Cookies", "ingredients": ["butter", "flour", "eggs", "cinamon", "sugar", "milk"] }];
 
-    let recipesList = [ {
-      "name": "Cookies",
-      "ingredients": ["butter", "flour", "eggs", "vanilla", "sugar", "milk"]
-    }]
+        class Page extends React.Component { 
+          constructor() { 
+            super();
+            this.state = { recipes: recipesList,
+                           showRecipes: [] };
+            this.setState({showRecipes : this.state.recipes.map((r) => { return false})}); 
+          }
 
-    class Page extends React.Component {
-      render() {
-        return (
-           <div className="page">
+          handleOnClickShowIng(i) {
+            const showRecipes = this.state.showRecipes.slice(); // modo correcto de copiar un array en javascript
+            showRecipes[i] = !showRecipes[i]; // niega lo que había
+            this.setState({ showRecipes : showRecipes });
+          }
+
+          render() {
+            return (
+        <div className="page">
             <header>
-              <h1>The Most Wonderful Recipe Box!</h1>
+                <h1>The Most Wonderful Recipe Box!</h1>
             </header>
             <div className="recipesList">
-            {recipesList.map((recipe) => {
-              return (
-                <Recipe name={recipe.name} ingredients={recipe.ingredients} />
-              )})
-            }
+                {recipesList.map((recipe, i) => { return (
+                <Recipe name={recipe.name} ingredients={recipe.ingredients} onClickShowIng={() => this.handleOnClickShowIng(i)} showIng={this.state.showRecipes[i]} key={recipe.name + i} /> )}) }
             </div>
             <footer>
-            <p>2018 - Made with love and perseverance.</p>
+                <p>2018 - Made with love and perseverance.</p>
             </footer>
-           </div>
-        )
-      }
-    }
-
-    function Recipe(props){
-      return (
-        <div className="recipe">
-          <div className="name">
-            <h2>{props.name}</h2>
-          </div>
-          <div className="ingredients">
-          <h3>Ingredients</h3>
-          {props.ingredients.map((ingr) => {
-            return (<p>{ingr}</p>)            
-          })}
-          </div>
         </div>
-      )
-    }
+        ) } }
 
-    ReactDOM.render(<Page/>,
-      document.getElementById('root')
-    );
+        function Recipe(props){ return (
+        <div className="recipe">
+            <div className="name" onClick={props.onClickShowIng}>
+                <h2>{props.name}</h2>
+            </div>
+            { (props.showIng === true)?
+            <Ingredients ingredients={props.ingredients} /> :
+            <div></div> }
+        </div>
+        ) }
 
+        function Ingredients (props) { 
+          return (
+        <div className="ingredients">
+            <h3>Ingredients</h3> {props.ingredients.map((ingr) => { return (
+            <p key={ingr}>{ingr}</p>) })}
+        </div> ) }
+
+        ReactDOM.render(
+        <Page/>, document.getElementById('root') );
     </script>
-  </body>
+</body>
+
 </html>
