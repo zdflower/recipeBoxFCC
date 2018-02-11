@@ -27,7 +27,6 @@
                            showRecipes: [],
                            showAddRecipe: false
                        };
-            this.setState({showRecipes : this.state.recipes.map((r) => { return false})}); 
           }
 
           handleOnClickShowIng(i) {
@@ -105,8 +104,11 @@ class AddRecipeForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  /* to update the state while the user types */
   handleChange(event) {
-    this.setState({value: event.target.value});
+    this.setState({
+      [event.target.name]: event.target.value
+    });
   }
 
   handleSubmit(event) {
@@ -122,14 +124,22 @@ class AddRecipeForm extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
+        <div>
         <label>
           Name:
-          <input type="text" value={this.state.name} onChange={this.handleChange}  />
+          <input name="name"
+            placeholder="recipe name" type="text"
+            value={this.state.name}
+            onChange={this.handleChange}
+          />
         </label>
+          </div>
+        <div>
         <label>
           Ingredients:
-          <input type="text" value={this.state.ingredients} onChange={this.handleChange} />
+          <input name="ingredients" placeholder="ingredients" type="text" value={this.state.ingredients} onChange={this.handleChange} />
         </label>
+          </div>
         <input type="submit" value="Submit"/>
         <div>Nombre: {this.state.name}, Ingredientes: {this.state.ingredients}</div>
       </form>
