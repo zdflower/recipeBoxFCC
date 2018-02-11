@@ -47,12 +47,10 @@
       }
 
       handleAddRecipe(fields) {
-         /* agregar el código para efectivamente guardar la nueva receta */
-        alert(fields.name)
         this.setState({
           recipes: this.state.recipes.concat( [{name: fields.name, ingredients: fields.ingredients }]),
           showAddRecipe : false
-        }); // repetido con handleCloseAddRecipe, ¿cómo lo evito?
+        });
      }
 
           render() {
@@ -117,7 +115,7 @@ class AddRecipeForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  /* to update the state while the user types */
+  /* To update the state while the user types */
   handleChange(event) {
     this.setState({
       [event.target.name]: event.target.value
@@ -125,7 +123,6 @@ class AddRecipeForm extends React.Component {
   }
 
   handleSubmit(event) {
-    // alert('A new recipe was submitted: ' + this.state.name);
     this.props.onClickAddRecipe(this.state); // ¿Por acá le pasa los datos al componente de una jerarquía superior? Sí, this.state serían los fields (y a la vez deja de mostrarse el recuadro porque esta función pone en false el estado showAddRecipe, ¿está bien hacerlo así?)
     event.preventDefault();
   }
@@ -166,10 +163,8 @@ class AddRecipeForm extends React.Component {
         */
 }
 
-
         ReactDOM.render(
         <Page/>, document.getElementById('root') );
-
 
     </script>
 </body>
