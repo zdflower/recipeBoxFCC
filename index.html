@@ -39,10 +39,14 @@
             this.setState({ showAddRecipe : true });
       }
 
+      handleCloseAddRecipe() {
+       this.setState({ showAddRecipe : false });
+      }
+
          handleAddRecipe(fields) {
          /* agregar el código para efectivamente guardar la nueva receta */
          alert(fields)
-       this.setState({ showAddRecipe : false });
+       this.setState({ showAddRecipe : false }); // repetido con handleCloseAddRecipe, ¿cómo lo evito?
      }
 
           render() {
@@ -57,7 +61,9 @@
                 <button onClick={() => this.handleOnClickAddRecipeView() }>Add recipe</button>
             </div>
             { (this.state.showAddRecipe) ?
-               <AddRecipe onClickAddRecipe={() => this.handleAddRecipe(fields)}/> :
+               <AddRecipe
+                 onClickAddRecipe={() => this.handleAddRecipe(fields)}
+                 cancel={() => this.handleCloseAddRecipe() } /> :
                <div></div>  
             }
             <footer>
@@ -90,12 +96,13 @@
         function AddRecipe(props) {
             return (
             <div className="newRecipeForm">
-                <AddRecipeForm onClickAddRecipe={props.onClickAddRecipe}/>
+                <AddRecipeForm onClickAddRecipe={props.onClickAddRecipe} cancel={props.cancel} />
             </div>
             )
         }
 
 /* https://reactjs.org/docs/forms.html */
+/* How to code a form in React - youtube */
 class AddRecipeForm extends React.Component {
   constructor(props) {
     super(props);
@@ -113,8 +120,6 @@ class AddRecipeForm extends React.Component {
 
   handleSubmit(event) {
     alert('A new recipe was submitted: ' + this.state.name);
-    // ¿Acá habría que hacer algo con los datos obtenidos del formulario?
-    // ¿Cómo los usás?
     this.setState({name: event.target.name, ingredients: event.target.ingredients})
 
     this.props.onClickAddRecipe(); // para que desaparezca el recuadro de agregar receta
@@ -127,7 +132,8 @@ class AddRecipeForm extends React.Component {
         <div>
         <label>
           Name:
-          <input name="name"
+          <input
+            name="name"
             placeholder="recipe name" type="text"
             value={this.state.name}
             onChange={this.handleChange}
@@ -137,10 +143,19 @@ class AddRecipeForm extends React.Component {
         <div>
         <label>
           Ingredients:
-          <input name="ingredients" placeholder="ingredients" type="text" value={this.state.ingredients} onChange={this.handleChange} />
+          <input
+            name="ingredients"
+            placeholder="ingredients" type="text"
+            value={this.state.ingredients}
+            onChange={this.handleChange}
+          />
         </label>
           </div>
         <input type="submit" value="Submit"/>
+        <!-- Fue necesario incluir () luego de this.props.cancel, de otra manera ejecutaba el handleSubmit
+¿Por qué acá sí es necesario y en otras partes es necesario no incluirlo?
+        -->
+        <button onClick={() => this.props.cancel() }>Cancel</button>
         <div>Nombre: {this.state.name}, Ingredientes: {this.state.ingredients}</div>
       </form>
     );
