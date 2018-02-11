@@ -18,10 +18,9 @@
 
 <body>
     <div id="root"></div>
-    <script type="text/babel">
-        let recipesList = [{ "name": "Vanilla Cookies", "ingredients": ["butter", "flour", "eggs", "vanilla", "sugar", "milk"] }, { "name": "Chocolate Cookies", "ingredients": ["butter", "flour", "eggs", "chocolate", "sugar", "milk"] }, { "name": "Algarroba Cookies", "ingredients": ["butter", "flour", "eggs", "algarroba flour", "sugar", "milk"] }, { "name": "Cinamon Cookies", "ingredients": ["butter", "flour", "eggs", "cinamon", "sugar", "milk"] }];
-
-        class Page extends React.Component { 
+    <script type="text/babel" >
+              let recipesList = [{ "name": "Vanilla Cookies", "ingredients": ["butter", "flour", "eggs", "vanilla", "sugar", "milk"] }, { "name": "Chocolate Cookies", "ingredients": ["butter", "flour", "eggs", "chocolate", "sugar", "milk"] }, { "name": "Algarroba Cookies", "ingredients": ["butter", "flour", "eggs", "algarroba flour", "sugar", "milk"] }, { "name": "Cinnamon Cookies", "ingredients": ["butter", "flour", "eggs", "cinnamon", "sugar", "milk"] }];
+    class Page extends React.Component {
           constructor() { 
             super();
             this.state = { recipes: recipesList,
@@ -41,8 +40,9 @@
             this.setState({ showAddRecipe : true });
       }
 
-         handleAddRecipe() {
+         handleAddRecipe(fields) {
          /* agregar el código para efectivamente guardar la nueva receta */
+         alert(fields)
        this.setState({ showAddRecipe : false });
      }
 
@@ -58,7 +58,7 @@
                 <button onClick={() => this.handleOnClickAddRecipeView() }>Add recipe</button>
             </div>
             { (this.state.showAddRecipe) ?
-               <AddRecipe onClickAddRecipe={() => this.handleAddRecipe()}/> : 
+               <AddRecipe onClickAddRecipe={() => this.handleAddRecipe(fields)}/> :
                <div></div>  
             }
             <footer>
@@ -66,6 +66,7 @@
             </footer>
         </div>
         ) } }
+
 
         function Recipe(props){ return (
         <div className="recipe">
@@ -90,14 +91,56 @@
         function AddRecipe(props) {
             return (
             <div className="newRecipeForm">
-                New recipe form
-                <button onClick={props.onClickAddRecipe}>OK</button>
+                <AddRecipeForm onClickAddRecipe={props.onClickAddRecipe}/>
             </div>
             )
         }
 
+/* https://reactjs.org/docs/forms.html */
+class AddRecipeForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {name: '', ingredients: ''};
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('A new recipe was submitted: ' + this.state.name);
+    // ¿Acá habría que hacer algo con los datos obtenidos del formulario?
+    // ¿Cómo los usás?
+    this.setState({name: event.target.name, ingredients: event.target.ingredients})
+
+    this.props.onClickAddRecipe(); // para que desaparezca el recuadro de agregar receta
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Name:
+          <input type="text" value={this.state.name} onChange={this.handleChange}  />
+        </label>
+        <label>
+          Ingredients:
+          <input type="text" value={this.state.ingredients} onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit"/>
+        <div>Nombre: {this.state.name}, Ingredientes: {this.state.ingredients}</div>
+      </form>
+    );
+  }
+}
+
+
         ReactDOM.render(
         <Page/>, document.getElementById('root') );
+
 
     </script>
 </body>
