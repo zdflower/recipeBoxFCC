@@ -45,7 +45,7 @@
 
          handleAddRecipe(fields) {
          /* agregar el código para efectivamente guardar la nueva receta */
-         alert(fields)
+         alert(fields.name)
        this.setState({ showAddRecipe : false }); // repetido con handleCloseAddRecipe, ¿cómo lo evito?
      }
 
@@ -62,7 +62,7 @@
             </div>
             { (this.state.showAddRecipe) ?
                <AddRecipe
-                 onClickAddRecipe={() => this.handleAddRecipe(fields)}
+                 onClickAddRecipe={(fields) => this.handleAddRecipe(fields)}
                  cancel={() => this.handleCloseAddRecipe() } /> :
                <div></div>  
             }
@@ -71,7 +71,7 @@
             </footer>
         </div>
         ) } }
-
+/* Arriba, fue necesario incluir (fields)  en <AddRecipe onClickAddRecipe={(fields) => ... */
 
         function Recipe(props){ return (
         <div className="recipe">
@@ -104,8 +104,8 @@
 /* https://reactjs.org/docs/forms.html */
 /* How to code a form in React - youtube */
 class AddRecipeForm extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {name: '', ingredients: ''};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -119,10 +119,8 @@ class AddRecipeForm extends React.Component {
   }
 
   handleSubmit(event) {
-    alert('A new recipe was submitted: ' + this.state.name);
-    this.setState({name: event.target.name, ingredients: event.target.ingredients})
-
-    this.props.onClickAddRecipe(); // para que desaparezca el recuadro de agregar receta
+    // alert('A new recipe was submitted: ' + this.state.name);
+    this.props.onClickAddRecipe(this.state); // ¿Por acá le pasa los datos al componente de una jerarquía superior? Sí, this.state serían los fields (y a la vez deja de mostrarse el recuadro porque esta función pone en false el estado showAddRecipe, ¿está bien hacerlo así?)
     event.preventDefault();
   }
 
@@ -152,14 +150,14 @@ class AddRecipeForm extends React.Component {
         </label>
           </div>
         <input type="submit" value="Submit"/>
-        <!-- Fue necesario incluir () luego de this.props.cancel, de otra manera ejecutaba el handleSubmit
-¿Por qué acá sí es necesario y en otras partes es necesario no incluirlo?
-        -->
         <button onClick={() => this.props.cancel() }>Cancel</button>
         <div>Nombre: {this.state.name}, Ingredientes: {this.state.ingredients}</div>
       </form>
     );
   }
+          /* Fue necesario incluir () luego de this.props.cancel, de otra manera ejecutaba el handleSubmit
+¿Por qué acá sí es necesario y en otras partes es necesario no incluirlo?
+        */
 }
 
 
