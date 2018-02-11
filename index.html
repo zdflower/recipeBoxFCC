@@ -19,14 +19,17 @@
 <body>
     <div id="root"></div>
     <script type="text/babel" >
-              let recipesList = [{ "name": "Vanilla Cookies", "ingredients": ["butter", "flour", "eggs", "vanilla", "sugar", "milk"] }, { "name": "Chocolate Cookies", "ingredients": ["butter", "flour", "eggs", "chocolate", "sugar", "milk"] }, { "name": "Algarroba Cookies", "ingredients": ["butter", "flour", "eggs", "algarroba flour", "sugar", "milk"] }, { "name": "Cinnamon Cookies", "ingredients": ["butter", "flour", "eggs", "cinnamon", "sugar", "milk"] }];
+/* Se supone que ingredients es una cadena de caracteres donde cada ingrediente está separado del resto por una coma */
+
+              let recipesList = [{ "name": "Vanilla Cookies", "ingredients": "butter, flour, eggs, vanilla, sugar, milk" }, { "name": "Chocolate Cookies", "ingredients": "butter, flour, eggs, chocolate, sugar, milk" }, { "name": "Algarroba Cookies", "ingredients": "butter, flour, eggs, algarroba flour, sugar, milk" }, { "name": "Cinnamon Cookies", "ingredients": "butter, flour, eggs, cinnamon, sugar, milk" }];
     class Page extends React.Component {
           constructor() { 
             super();
-            this.state = { recipes: recipesList,
-                           showRecipes: [],
-                           showAddRecipe: false
-                       };
+            this.state = {
+              recipes: recipesList,
+              showRecipes: [],
+              showAddRecipe: false
+            };
           }
 
           handleOnClickShowIng(i) {
@@ -43,10 +46,13 @@
        this.setState({ showAddRecipe : false });
       }
 
-         handleAddRecipe(fields) {
+      handleAddRecipe(fields) {
          /* agregar el código para efectivamente guardar la nueva receta */
-         alert(fields.name)
-       this.setState({ showAddRecipe : false }); // repetido con handleCloseAddRecipe, ¿cómo lo evito?
+        alert(fields.name)
+        this.setState({
+          recipes: this.state.recipes.concat( [{name: fields.name, ingredients: fields.ingredients }]),
+          showAddRecipe : false
+        }); // repetido con handleCloseAddRecipe, ¿cómo lo evito?
      }
 
           render() {
@@ -56,7 +62,7 @@
                 <h1>The Most Wonderful Recipe Box!</h1>
             </header>
             <div className="recipesList">
-                {recipesList.map((recipe, i) => { return (
+                {this.state.recipes.map((recipe, i) => { return (
                 <Recipe name={recipe.name} ingredients={recipe.ingredients} onClickShowIng={() => this.handleOnClickShowIng(i)} showIng={this.state.showRecipes[i]} key={recipe.name + i} /> )}) }
                 <button onClick={() => this.handleOnClickAddRecipeView() }>Add recipe</button>
             </div>
@@ -79,7 +85,7 @@
                 <h2>{props.name}</h2>
             </div>
             { (props.showIng === true)?
-            <Ingredients ingredients={props.ingredients} /> :
+            <Ingredients ingredients={props.ingredients.split(',')} /> :
             <div></div> }
         </div>
         )
