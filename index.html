@@ -18,22 +18,27 @@
 
 <body>
     <div id="root"></div>
-    <script type="text/babel">
-        let recipesList = [{ "name": "Vanilla Cookies", "ingredients": ["butter", "flour", "eggs", "vanilla", "sugar", "milk"] }, { "name": "Chocolate Cookies", "ingredients": ["butter", "flour", "eggs", "chocolate", "sugar", "milk"] }, { "name": "Algarroba Cookies", "ingredients": ["butter", "flour", "eggs", "algarroba flour", "sugar", "milk"] }, { "name": "Cinnamon Cookies", "ingredients": ["butter", "flour", "eggs", "cinnamon", "sugar", "milk"] }];
+    <script type="text/babel" >
+/* It is assumed that ingredients is a String, where each ingredient is a word separated from the others by a comma */
 
-        class Page extends React.Component { 
+/* 
+https://forum.freecodecamp.org/t/store-data-in-web-browsers-storage/16154
+https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstorage
+*/
+
+    class Page extends React.Component {
           constructor() { 
             super();
-            this.state = { recipes: recipesList,
-                           showRecipes: [],
-                           showAddRecipe: false
-                       };
-            this.setState({showRecipes : this.state.recipes.map((r) => { return false})}); 
+            this.state = {
+              recipes : JSON.parse(localStorage.getItem('recipes')),
+              showRecipes: [],
+              showAddRecipe: false
+            };
           }
 
           handleOnClickShowIng(i) {
-            const showRecipes = this.state.showRecipes.slice(); // modo correcto de copiar un array en javascript
-            showRecipes[i] = !showRecipes[i]; // niega lo que había
+            const showRecipes = this.state.showRecipes.slice(); // copia el array
+            showRecipes[i] = !showRecipes[i];
             this.setState({ showRecipes : showRecipes });
           }
 
@@ -41,9 +46,17 @@
             this.setState({ showAddRecipe : true });
       }
 
-         handleAddRecipe() {
-         /* agregar el código para efectivamente guardar la nueva receta */
+      handleCloseAddRecipe() {
        this.setState({ showAddRecipe : false });
+      }
+
+      handleAddRecipe(fields) {
+        const recetas = this.state.recipes.concat([{name: fields.name, ingredients: fields.ingredients }]);
+        localStorage.setItem("recipes", JSON.stringify(recetas));
+        this.setState({
+          recipes: recetas,
+          showAddRecipe : false
+        });
      }
 
           render() {
@@ -53,12 +66,16 @@
                 <h1>The Most Wonderful Recipe Box!</h1>
             </header>
             <div className="recipesList">
-                {recipesList.map((recipe, i) => { return (
-                <Recipe name={recipe.name} ingredients={recipe.ingredients} onClickShowIng={() => this.handleOnClickShowIng(i)} showIng={this.state.showRecipes[i]} key={recipe.name + i} /> )}) }
+                {
+             (this.state.recipes) ? this.state.recipes.map((recipe, i) => { return (
+                <Recipe name={recipe.name} ingredients={recipe.ingredients} onClickShowIng={() => this.handleOnClickShowIng(i)} showIng={this.state.showRecipes[i]} key={recipe.name + i} /> )}) : 'No recipes yet.'
+              } 
                 <button onClick={() => this.handleOnClickAddRecipeView() }>Add recipe</button>
             </div>
             { (this.state.showAddRecipe) ?
-               <AddRecipe onClickAddRecipe={() => this.handleAddRecipe()}/> : 
+               <AddRecipe
+                 onClickAddRecipe={(fields) => this.handleAddRecipe(fields)}
+                 cancel={() => this.handleCloseAddRecipe() } /> :
                <div></div>  
             }
             <footer>
@@ -66,6 +83,7 @@
             </footer>
         </div>
         ) } }
+/* Arriba, fue necesario incluir (fields)  en <AddRecipe onClickAddRecipe={(fields) => ... */
 
         function Recipe(props){ return (
         <div className="recipe">
@@ -73,7 +91,7 @@
                 <h2>{props.name}</h2>
             </div>
             { (props.showIng === true)?
-            <Ingredients ingredients={props.ingredients} /> :
+            <Ingredients ingredients={props.ingredients.split(',')} /> :
             <div></div> }
         </div>
         )
@@ -90,11 +108,68 @@
         function AddRecipe(props) {
             return (
             <div className="newRecipeForm">
-                New recipe form
-                <button onClick={props.onClickAddRecipe}>OK</button>
+                <AddRecipeForm onClickAddRecipe={props.onClickAddRecipe} cancel={props.cancel} />
             </div>
             )
         }
+
+/* https://reactjs.org/docs/forms.html */
+/* How to code a form in React - youtube */
+class AddRecipeForm extends React.Component {
+  constructor() {
+    super();
+    this.state = {name: '', ingredients: ''};
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  /* To update the state while the user types */
+  handleChange(event) {
+    this.setState({
+      [event.target.name]: event.target.value
+    });
+  }
+
+  handleSubmit(event) {
+    this.props.onClickAddRecipe(this.state); // Por acá le pasa los datos al componente de una jerarquía superior, this.state serían los fields (y a la vez deja de mostrarse el recuadro porque esta función pone en false el estado showAddRecipe. ¿Está bien hacerlo así?)
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <div>
+        <label>
+          Name:
+          <input
+            name="name"
+            placeholder="recipe name" type="text"
+            value={this.state.name}
+            onChange={this.handleChange}
+          />
+        </label>
+          </div>
+        <div>
+        <label>
+          Ingredients:
+          <input
+            name="ingredients"
+            placeholder="ingredients" type="text"
+            value={this.state.ingredients}
+            onChange={this.handleChange}
+          />
+        </label>
+          </div>
+        <input type="submit" value="Submit"/>
+        <button onClick={() => this.props.cancel() }>Cancel</button>
+        <div>Nombre: {this.state.name}, Ingredientes: {this.state.ingredients}</div>
+      </form>
+    );
+  }
+          /* Fue necesario incluir () luego de this.props.cancel, de otra manera ejecutaba el handleSubmit
+¿Por qué acá sí es necesario y en otras partes es necesario no incluirlo?
+        */
+}
 
         ReactDOM.render(
         <Page/>, document.getElementById('root') );

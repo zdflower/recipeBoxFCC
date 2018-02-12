@@ -43,7 +43,7 @@ body {
   background: #FF7D9B;
   color: purple;
   width: 60%;
-  height: 100px;
+  /* height: 100px; */
   top: 30%;
   left: 20%;
   z-index: 1;
