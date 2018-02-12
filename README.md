@@ -21,4 +21,5 @@ Visit [https://zdflower.github.io/recipeBoxFCC/](https://zdflower.github.io/reci
 * [How do I store an array in localStorage](https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstorage)
 * [Forms](https://reactjs.org/docs/forms.html)
 * [How to code a form in React](https://www.youtube.com/watch?v=qH4pJISKeoI)
+* [Problems with setState handlers in react](https://stackoverflow.com/questions/44438117/problems-with-setstate-handlers-in-react)
 * [Sass Shop](http://www.sassshop.com/)
