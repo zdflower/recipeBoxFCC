@@ -19,31 +19,26 @@
 <body>
     <div id="root"></div>
     <script type="text/babel" >
-/* Se supone que ingredients es una cadena de caracteres donde cada ingrediente está separado del resto por una coma */
-
-              let recipesList = [{ "name": "Vanilla Cookies", "ingredients": "butter, flour, eggs, vanilla, sugar, milk" }, { "name": "Chocolate Cookies", "ingredients": "butter, flour, eggs, chocolate, sugar, milk" }, { "name": "Algarroba Cookies", "ingredients": "butter, flour, eggs, algarroba flour, sugar, milk" }, { "name": "Cinnamon Cookies", "ingredients": "butter, flour, eggs, cinnamon, sugar, milk" }];
+/* It is assumed that ingredients is a String, where each ingredient is a word separated from the others by a comma */
 
 /* 
 https://forum.freecodecamp.org/t/store-data-in-web-browsers-storage/16154
-
 https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstorage
 */
-
-// localStorage.setItem('recipes', JSON.stringify(recipesList));
 
     class Page extends React.Component {
           constructor() { 
             super();
             this.state = {
-              recipes : '' /* JSON.parse(localStorage.getItem('recipes'))*/,
+              recipes : JSON.parse(localStorage.getItem('recipes')),
               showRecipes: [],
               showAddRecipe: false
             };
           }
 
           handleOnClickShowIng(i) {
-            const showRecipes = this.state.showRecipes.slice(); // modo correcto de copiar un array en javascript
-            showRecipes[i] = !showRecipes[i]; // niega lo que había
+            const showRecipes = this.state.showRecipes.slice(); // copia el array
+            showRecipes[i] = !showRecipes[i];
             this.setState({ showRecipes : showRecipes });
           }
 
@@ -56,11 +51,10 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
       }
 
       handleAddRecipe(fields) {
-        /* ¿Guardo la nueva receta en el localStorage y después actualizo el state.recipes?  */
-        /* Debe haber una mejor forma de hacer esto: */
-        localStorage.setItem("recipes", JSON.stringify(this.state.recipes.concat([{name: fields.name, ingredients: fields.ingredients }])))
+        const recetas = this.state.recipes.concat([{name: fields.name, ingredients: fields.ingredients }]);
+        localStorage.setItem("recipes", JSON.stringify(recetas));
         this.setState({
-          recipes: JSON.parse(localStorage.getItem('recipes')),
+          recipes: recetas,
           showAddRecipe : false
         });
      }
@@ -73,10 +67,8 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
             </header>
             <div className="recipesList">
                 {
-               /* Manejar el caso de que no haya ninguna receta */ 
-               
-               (this.state.recipes) ? this.state.recipes.map((recipe, i) => { return (
-                <Recipe name={recipe.name} ingredients={recipe.ingredients} onClickShowIng={() => this.handleOnClickShowIng(i)} showIng={this.state.showRecipes[i]} key={recipe.name + i} /> )}) : 'Todavía no hay recetas.' 
+             (this.state.recipes) ? this.state.recipes.map((recipe, i) => { return (
+                <Recipe name={recipe.name} ingredients={recipe.ingredients} onClickShowIng={() => this.handleOnClickShowIng(i)} showIng={this.state.showRecipes[i]} key={recipe.name + i} /> )}) : 'No recipes yet.'
               } 
                 <button onClick={() => this.handleOnClickAddRecipeView() }>Add recipe</button>
             </div>
@@ -139,7 +131,7 @@ class AddRecipeForm extends React.Component {
   }
 
   handleSubmit(event) {
-    this.props.onClickAddRecipe(this.state); // ¿Por acá le pasa los datos al componente de una jerarquía superior? Sí, this.state serían los fields (y a la vez deja de mostrarse el recuadro porque esta función pone en false el estado showAddRecipe, ¿está bien hacerlo así?)
+    this.props.onClickAddRecipe(this.state); // Por acá le pasa los datos al componente de una jerarquía superior, this.state serían los fields (y a la vez deja de mostrarse el recuadro porque esta función pone en false el estado showAddRecipe. ¿Está bien hacerlo así?)
     event.preventDefault();
   }
 
