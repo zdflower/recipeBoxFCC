@@ -1,6 +1,8 @@
 $rosaChicle: #FF7D9B;
 $mainBackground: purple;
-$centerBacground: white;
+$centerBackground: white;
+$danger: red;
+
 html {
     position: relative;
     min-height: 100%;
@@ -35,7 +37,7 @@ body {
 
 .recipe {
     border: 1px solid $rosaChicle;
-    background: $centerBacground;
+    background: $centerBackground;
     width: 50%;
     margin-bottom: 20px;
     p,
@@ -65,4 +67,12 @@ body {
     left: 20%;
     z-index: 1;
     box-shadow: 0 0 1em 1em #ccc;
+}
+
+.delete-btn {
+  background-color: $danger;
+}
+
+.edit-btn {
+  background-color: lightgreen;
 }

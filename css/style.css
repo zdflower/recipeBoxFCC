@@ -49,4 +49,10 @@ body {
   z-index: 1;
   box-shadow: 0 0 1em 1em #ccc; }
 
+.delete-btn {
+  background-color: red; }
+
+.edit-btn {
+  background-color: lightgreen; }
+
 /*# sourceMappingURL=style.css.map */
