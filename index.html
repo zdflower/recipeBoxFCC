@@ -26,15 +26,35 @@ https://forum.freecodecamp.org/t/store-data-in-web-browsers-storage/16154
 https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstorage
 */
 
+// Revisar y reescribir para sacar toda la redundancia que se pueda
     class Page extends React.Component {
           constructor() { 
             super();
+            const recetas = JSON.parse(localStorage.getItem('recipes'));
+            const showRecipes = (recetas) ? recetas.map((r) => {return 0}) : [];
             this.state = {
-              recipes : JSON.parse(localStorage.getItem('recipes')),
-              showRecipes: [],
+              recipes : recetas,
+              showRecipes: showRecipes,
               showAddRecipe: false
             };
           }
+
+      /* borra correctamente del localstorage pero no deja de mostrar el recipebody ni la receta, como que no se actualiza el this.state.recipes */
+      handleOnClickDelete(i) {
+        // alert('Deleting ' + this.state.recipes[i].name);
+        // dejo de mostrar los ingredientes
+        const showRecipes = remove(this.state.showRecipes, i);
+        // this.state.recipes.splice(i, 1);
+        const recetas = remove(this.state.recipes, i);
+        localStorage.setItem("recipes", JSON.stringify(recetas)); // OK
+
+        //const showRecipes = this.state.showRecipes.slice(0, i).concat(this.state.showRecipes.slice(i+1));
+        this.setState({ showRecipes : showRecipes, recipes: recetas })
+    }
+
+      handleOnClickEdit(i) {
+        alert('Editing ' + this.state.recipes[i].name);
+      }
 
           handleOnClickShowIng(i) {
             const showRecipes = this.state.showRecipes.slice(); // copia el array
@@ -51,7 +71,9 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
       }
 
       handleAddRecipe(fields) {
-        const recetas = this.state.recipes.concat([{name: fields.name, ingredients: fields.ingredients }]);
+        const newRecipe = {name: fields.name, ingredients: fields.ingredients };
+       const recetas = (this.state.recipes)? this.state.recipes.concat([newRecipe]) : [newRecipe];
+
         localStorage.setItem("recipes", JSON.stringify(recetas));
         this.setState({
           recipes: recetas,
@@ -60,6 +82,10 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
      }
 
           render() {
+            // si recipes es nulo o vacío mostrar el mensaje de que no hay recetas
+            // en otro caso mostrar las recetas.
+
+            // es decir, si recipes no es nulo y la longitud es mayor que cero mostrar las recetas, en otro caso decir que no hay recetas
             return (
         <div className="page">
             <header>
@@ -67,8 +93,8 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
             </header>
             <div className="recipesList">
                 {
-             (this.state.recipes) ? this.state.recipes.map((recipe, i) => { return (
-                <Recipe name={recipe.name} ingredients={recipe.ingredients} onClickShowIng={() => this.handleOnClickShowIng(i)} showIng={this.state.showRecipes[i]} key={recipe.name + i} /> )}) : 'No recipes yet.'
+             (this.state.recipes && this.state.recipes.length > 0) ? this.state.recipes.map((recipe, i) => { return (
+               <Recipe name={recipe.name} ingredients={recipe.ingredients} onClickShowIng={() => this.handleOnClickShowIng(i)} showIng={this.state.showRecipes[i]} key={recipe.name + i} onClickDelete={() => this.handleOnClickDelete(i)} onClickEdit={() => this.handleOnClickEdit(i)} /> )}) : <p>'No recipes yet.'</p>
               } 
                 <button onClick={() => this.handleOnClickAddRecipeView() }>Add recipe</button>
             </div>
@@ -91,8 +117,12 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
                 <h2>{props.name}</h2>
             </div>
             { (props.showIng === true)?
-            <Ingredients ingredients={props.ingredients.split(',')} /> :
-            <div></div> }
+            <div className="recipeBody">
+              <Ingredients ingredients={props.ingredients.split(',')} />
+              <button className="delete-btn" onClick={props.onClickDelete}>Delete</button>
+              <button className="edit-btn" onClick={props.onClickEdit}>Edit</button>
+            </div> :
+            <div className="recipeBody"></div> }
         </div>
         )
         }
@@ -173,6 +203,13 @@ class AddRecipeForm extends React.Component {
 
         ReactDOM.render(
         <Page/>, document.getElementById('root') );
+
+
+// Auxiliar
+// Eloquent Javascript page 107
+function remove(arr, i) {
+  return arr.slice(0, i).concat(arr.slice (i + 1));
+}
 
     </script>
 </body>
