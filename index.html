@@ -28,126 +28,222 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
 
 // Revisar y reescribir para sacar toda la redundancia que se pueda
     class Page extends React.Component {
-          constructor() { 
-            super();
+          constructor(props) {
+            super(props);
             const recetas = JSON.parse(localStorage.getItem('recipes'));
             const showRecipes = (recetas) ? recetas.map((r) => {return 0}) : [];
             this.state = {
               recipes : recetas,
               showRecipes: showRecipes,
-              showAddRecipe: false
+              showAddRecipe: false,
+              showEditRecipe: false
             };
           }
 
-      /* borra correctamente del localstorage pero no deja de mostrar el recipebody ni la receta, como que no se actualiza el this.state.recipes */
-      handleOnClickDelete(i) {
-        // alert('Deleting ' + this.state.recipes[i].name);
-        // dejo de mostrar los ingredientes
+    handleOnClickDelete(i) {
         const showRecipes = remove(this.state.showRecipes, i);
-        // this.state.recipes.splice(i, 1);
         const recetas = remove(this.state.recipes, i);
-        localStorage.setItem("recipes", JSON.stringify(recetas)); // OK
-
-        //const showRecipes = this.state.showRecipes.slice(0, i).concat(this.state.showRecipes.slice(i+1));
+        localStorage.setItem("recipes", JSON.stringify(recetas));
         this.setState({ showRecipes : showRecipes, recipes: recetas })
     }
 
-      handleOnClickEdit(i) {
-        alert('Editing ' + this.state.recipes[i].name);
-      }
+    handleOnClickEdit(i) {
+      alert('Editing ' + this.state.recipes[i].name);
+    }
 
-          handleOnClickShowIng(i) {
-            const showRecipes = this.state.showRecipes.slice(); // copia el array
-            showRecipes[i] = !showRecipes[i];
-            this.setState({ showRecipes : showRecipes });
-          }
+    handleOnClickShowIng(i) {
+      const showRecipes = this.state.showRecipes.slice(); // copia el array
+      showRecipes[i] = !showRecipes[i];
+      this.setState({ showRecipes : showRecipes });
+    }
 
-          handleOnClickAddRecipeView() {
-            this.setState({ showAddRecipe : true });
-      }
+    handleOnClickAddRecipeView() {
+      this.setState({ showAddRecipe : true });
+    }
 
-      handleCloseAddRecipe() {
-       this.setState({ showAddRecipe : false });
-      }
+    handleOnClickEditRecipeView() {
+      this.setState({ showEditRecipe : true });
+    }
 
-      handleAddRecipe(fields) {
-        const newRecipe = {name: fields.name, ingredients: fields.ingredients };
-       const recetas = (this.state.recipes)? this.state.recipes.concat([newRecipe]) : [newRecipe];
+    handleCloseAddRecipe() {
+      this.setState({ showAddRecipe : false });
+    }
 
-        localStorage.setItem("recipes", JSON.stringify(recetas));
-        this.setState({
-          recipes: recetas,
-          showAddRecipe : false
-        });
-     }
+    handleAddRecipe(fields) {
+      const newRecipe = {name: fields.name, ingredients: fields.ingredients };
+      const recetas = (this.state.recipes)? this.state.recipes.concat([newRecipe]) : [newRecipe];
+      localStorage.setItem("recipes", JSON.stringify(recetas));
+      this.setState({
+        recipes: recetas,
+        showAddRecipe : false
+      });
+   }
 
-          render() {
-            // si recipes es nulo o vacío mostrar el mensaje de que no hay recetas
-            // en otro caso mostrar las recetas.
-
-            // es decir, si recipes no es nulo y la longitud es mayor que cero mostrar las recetas, en otro caso decir que no hay recetas
-            return (
+   render() {
+      return (
         <div className="page">
-            <header>
-                <h1>The Most Wonderful Recipe Box!</h1>
-            </header>
-            <div className="recipesList">
-                {
-             (this.state.recipes && this.state.recipes.length > 0) ? this.state.recipes.map((recipe, i) => { return (
-               <Recipe name={recipe.name} ingredients={recipe.ingredients} onClickShowIng={() => this.handleOnClickShowIng(i)} showIng={this.state.showRecipes[i]} key={recipe.name + i} onClickDelete={() => this.handleOnClickDelete(i)} onClickEdit={() => this.handleOnClickEdit(i)} /> )}) : <p>'No recipes yet.'</p>
-              } 
-                <button onClick={() => this.handleOnClickAddRecipeView() }>Add recipe</button>
-            </div>
-            { (this.state.showAddRecipe) ?
-               <AddRecipe
-                 onClickAddRecipe={(fields) => this.handleAddRecipe(fields)}
-                 cancel={() => this.handleCloseAddRecipe() } /> :
-               <div></div>  
-            }
-            <footer>
-                <p>2018 - Made with love and perseverance.</p>
-            </footer>
+          <Header />
+          <RecipesList
+            recipes={this.state.recipes}
+            showRecipes={this.state.showRecipes}
+            handleOnClickShowIng={(i) => this.handleOnClickShowIng(i)}
+            handleOnClickDelete={(i) => this.handleOnClickDelete(i)}
+            handleOnClickEdit={(i) => this.handleOnClickEdit(i)}
+            />
+          <AddRecipeButton onClick={() => this.handleOnClickAddRecipeView()}/>
+          {(this.state.showAddRecipe) ? <AddRecipe
+            onClickAddRecipe={(fields) => this.handleAddRecipe(fields)}
+            cancel={() => this.handleCloseAddRecipe()}
+            showAddRecipe={this.state.showAddRecipe}
+            /> : <div></div>}
+          <Footer />
         </div>
         ) } }
+
 /* Arriba, fue necesario incluir (fields)  en <AddRecipe onClickAddRecipe={(fields) => ... */
 
-        function Recipe(props){ return (
-        <div className="recipe">
-            <div className="name" onClick={props.onClickShowIng}>
-                <h2>{props.name}</h2>
-            </div>
-            { (props.showIng === true)?
-            <div className="recipeBody">
-              <Ingredients ingredients={props.ingredients.split(',')} />
-              <button className="delete-btn" onClick={props.onClickDelete}>Delete</button>
-              <button className="edit-btn" onClick={props.onClickEdit}>Edit</button>
-            </div> :
-            <div className="recipeBody"></div> }
-        </div>
-        )
-        }
+/* Arriba, ver cómo escribir un método que maneje en general el mostrar y dejar de mostrar un componente, según sea el que se indique y usarlo para Add y Edit */
 
-        function Ingredients (props) { 
+
+/*           <EditRecipe
+            onClickEditRecipe={(fields) => this.handleEditRecipe(fields)}
+            cancel={()=> this.handleCloseEditRecipe() }
+            showEditRecipe={this.state.showEditRecipe}
+            />
+            */
+
+function Header(props) {
+  return (
+    <header>
+      <h1>The Most Wonderful Recipe Box!</h1>
+    </header>)
+}
+
+function Footer(props) {
+  return (
+    <footer>
+      <p>2018 - Made with love and perseverance.</p>
+    </footer>
+  )
+}
+
+function RecipesList(props) {
+  if (props.recipes && props.recipes.length > 0) {
+      return (
+        <div className="recipesList">
+      {
+        props.recipes.map((recipe, i) => { return (
+        <Recipe
+           name={recipe.name}
+           ingredients={recipe.ingredients}
+           onClickShowIng={() => props.handleOnClickShowIng(i)}
+           showIng={props.showRecipes[i]}
+           key={recipe.name + i}
+           onClickDelete={() => props.handleOnClickDelete(i)}
+           onClickEdit={() => props.handleOnClickEdit(i)} />
+        )})
+      }
+      </div>
+      )
+  } else {
+    return (
+      <div className="recipesList">
+        <p>'No recipes yet.'</p>
+      </div>
+    )
+  }
+}
+
+function AddRecipeButton(props) {
+  return <Button classN="add-recipe-btn" onClick={() => props.onClick()} value="Add recipe" />
+}
+
+function DeleteRecipeButton(props){
+    return <Button classN="delete-btn" onClick={() => props.onClick()} value="Delete recipe" />
+}
+
+
+function EditRecipeButton(props){
+    return <Button classN="edit-btn" onClick={() => props.onClick()} value="Edit recipe" />
+}
+
+function Button(props){
+  return (
+    <button className={props.classN} onClick={props.onClick}>
+      {props.value}
+    </button>
+  )
+}
+
+function Recipe(props){
+  return (
+    <div className="recipe">
+      <div className="name" onClick={props.onClickShowIng}>
+        <h2>{props.name}</h2>
+      </div>
+      <RecipeBody
+        ingredients={props.ingredients}
+        onClickDelete={props.onClickDelete}
+        onClickEdit={props.onClickEdit}
+        showIng={props.showIng}
+        />
+    </div>
+  )
+}
+
+function RecipeBody(props){
+  if (props.showIng === true) {
+    return (<div className="recipeBody">
+      <Ingredients ingredients={props.ingredients.split(',')} />
+      <DeleteRecipeButton onClick={props.onClickDelete} />
+      <EditRecipeButton onClick={props.onClickEdit} />
+    </div>
+  )} else {
+      return <div className="recipeBody"></div>
+    }
+}
+
+function Ingredients (props) {
           return (
         <div className="ingredients">
             <h3>Ingredients</h3> {props.ingredients.map((ingr) => { return (
             <p key={ingr}>{ingr}</p>) })}
         </div> ) 
-        }
+}
 
-        function AddRecipe(props) {
+function AddRecipe(props) {
+   if (props.showAddRecipe) {
+      return (
+        <div className="newRecipeForm">
+          <AddRecipeForm onClickAddRecipe={props.onClickAddRecipe} cancel={props.cancel} />
+        </div>
+        )
+     } else {
+       <div className="newRecipeForm"></div>
+     }
+  }
+
+/* ¿Podría haber algo más genérico que sirva para Add y Edit ? */
+/*
+  function EditRecipe(props) {
+          if (props.showEditRecipe){
             return (
-            <div className="newRecipeForm">
-                <AddRecipeForm onClickAddRecipe={props.onClickAddRecipe} cancel={props.cancel} />
+            <div className="EditRecipeForm">
+                <AddRecipeForm onClickEditRecipe={props.onClickEditRecipe} cancel={props.cancel} />
             </div>
             )
-        }
+          } else {
+            return
+            <div className="EditRecipeForm"></div>
+          }
+  }
+*/
 
 /* https://reactjs.org/docs/forms.html */
 /* How to code a form in React - https://www.youtube.com/watch?v=qH4pJISKeoI */
 class AddRecipeForm extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {name: '', ingredients: ''};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -200,6 +296,62 @@ class AddRecipeForm extends React.Component {
 ¿Por qué acá sí es necesario y en otras partes es necesario no incluirlo?
         */
 }
+
+/* Recuperar el estado de los campos de la receta. De algún lado le tiene que venir el índice de qué receta es o algo así, o directamente que se pasen los datos de la receta y después se asignen al estado de EditRecipeForm
+
+class EditRecipeForm extends React.Component {
+  constructor() {
+    super();
+   this.state = {name: '', ingredients: ''};
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+   // To update the state while the user types
+  handleChange(event) {
+    this.setState({
+      [event.target.name]: event.target.value
+    });
+  }
+
+  handleSubmit(event) {
+    this.props.onClickAddRecipe(this.state); // Por acá le pasa los datos al componente de una jerarquía superior, this.state serían los fields (y a la vez deja de mostrarse el recuadro porque esta función pone en false el estado showAddRecipe. ¿Está bien hacerlo así?)
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <div>
+        <label>
+          Name:
+          <input
+            name="name"
+            placeholder="recipe name" type="text"
+            value={this.state.name}
+            onChange={this.handleChange}
+          />
+        </label>
+          </div>
+        <div>
+        <label>
+          Ingredients:
+          <input
+            name="ingredients"
+            placeholder="ingredients" type="text"
+            value={this.state.ingredients}
+            onChange={this.handleChange}
+          />
+        </label>
+          </div>
+        <input type="submit" value="Submit"/>
+        <button onClick={() => this.props.cancel() }>Cancel</button>
+        <div>Nombre: {this.state.name}, Ingredientes: {this.state.ingredients}</div>
+      </form>
+    );
+  }
+} */
+
 
         ReactDOM.render(
         <Page/>, document.getElementById('root') );

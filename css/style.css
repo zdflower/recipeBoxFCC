@@ -18,7 +18,7 @@ body {
   text-align: center;
   color: #FF7D9B; }
 
-.recipesList {
+.recipesList, .add-recipe-btn {
   position: relative;
   left: 25%; }
 
