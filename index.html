@@ -26,45 +26,44 @@ https://forum.freecodecamp.org/t/store-data-in-web-browsers-storage/16154
 https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstorage
 */
 
-// Revisar y reescribir para sacar toda la redundancia que se pueda
-    class Page extends React.Component {
-          constructor(props) {
-            super(props);
-            const recetas = JSON.parse(localStorage.getItem('recipes'));
-            const showRecipes = (recetas) ? recetas.map((r) => {return 0}) : [];
-            this.state = {
-              recipes : recetas,
-              showRecipes: showRecipes,
-              showAddRecipe: false,
-              showEditRecipe: false,
-              actualIndex: recetas.length
-            };
-          }
+class Page extends React.Component {
+   constructor(props) {
+      super(props);
+      let recetas = JSON.parse(localStorage.getItem('recipes'));
+      const showRecipes = (recetas) ? recetas.map((r) => {return 0}) : [];
+      recetas = (recetas) ? recetas : [];
+      this.state = {
+        recipes : recetas,
+        showRecipes: showRecipes,
+        showAddRecipe: false,
+        showEditRecipe: false,
+        editIndex: 0
+      };
+   }
 
-
-    handleOnClickDelete(i) {
+   handleDelete(i) {
         const showRecipes = remove(this.state.showRecipes, i);
         const recetas = remove(this.state.recipes, i);
         localStorage.setItem("recipes", JSON.stringify(recetas));
-        this.setState({ showRecipes : showRecipes, recipes: recetas })
-    }
+        this.setState({ showRecipes : showRecipes, recipes: recetas})
+   }
 
-    handleOnClickShowIng(i) {
+   handleShowIng(i) {
       const showRecipes = this.state.showRecipes.slice(); // copia el array
       showRecipes[i] = !showRecipes[i];
       this.setState({ showRecipes : showRecipes });
-    }
+   }
 
-    // Add
-    handleOnClickAddRecipeView() {
+   // Add
+   handleAddRecipeView() {
       this.setState({ showAddRecipe : true });
-    }
+   }
 
-    handleCloseAddRecipe() {
+   handleCloseAddRecipe() {
       this.setState({ showAddRecipe : false });
-    }
+   }
 
-    handleAddRecipe(fields) {
+   handleAddRecipe(fields) {
       const newRecipe = {name: fields.name, ingredients: fields.ingredients };
       const recetas = (this.state.recipes)? this.state.recipes.concat([newRecipe]) : [newRecipe];
       localStorage.setItem("recipes", JSON.stringify(recetas));
@@ -74,55 +73,56 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
       });
    }
 
-  // Edit
-  handleOnClickEdit(i) {
-    //alert('Editing ' + this.state.recipes[i].name);
-    this.setState({ showEditRecipe : true, actualIndex: i });
-  }
-      // Ver si es correcto actualizar el índice de esta manera, si no hay algún problema con algún caso, en alguna circunstancia.
-  handleCloseEditRecipe() {
-    this.setState({ showEditRecipe : false, actualIndex: this.state.recipes.length });
-  }
-
-  handleEditRecipe(fields) {
-    const newRecipe = {name: fields.name, ingredients: fields.ingredients };
-    // tenés que utilizar el i que ya tenés que saber y que se lo pasás acá de alguna manera, por ejemplo el this.state.actualIndex
-    const recetas = this.state.recipes.slice();
-    recetas[this.state.actualIndex] = newRecipe;
-    localStorage.setItem("recipes", JSON.stringify(recetas));
-    this.setState({
-      recipes: recetas,
-      showEditRecipe : false
-    });
-  }
+   // Edit
+   handleEditBtn(i) {
+     this.setState({ showEditRecipe : true, editIndex: i });
+   }
+   handleCloseEditRecipe() {
+     this.setState({ showEditRecipe : false });
+   }
+   handleEditRecipe(fields) {
+     const newRecipe = {name: fields.name, ingredients: fields.ingredients };
+     const recetas = this.state.recipes.slice();
+     recetas[this.state.editIndex] = newRecipe;
+     localStorage.setItem("recipes", JSON.stringify(recetas));
+     this.setState({
+       recipes: recetas,
+       showEditRecipe : false
+     });
+   }
 
    render() {
       return (
         <div className="page">
           <Header />
-          <RecipesList
-            recipes={this.state.recipes}
-            showRecipes={this.state.showRecipes}
-            showEditRecipe={this.state.showEditRecipe}
-            handleOnClickShowIng={(i) => this.handleOnClickShowIng(i)}
-            handleOnClickDelete={(i) => this.handleOnClickDelete(i)}
-            handleOnClickEdit={(i) => this.handleOnClickEdit(i)}
-            handleOnClickEditRecipe={(fields) => this.handleEditRecipe(fields)}
-            cancel={() => this.handleCloseEditRecipe()}
-            />
-          <AddRecipeButton onClick={() => this.handleOnClickAddRecipeView()}/>
+          <div className="recipesList">
+           { this.state.recipes.map((recipe, i) => { return (
+              <div className="recipe" key={recipe.name + i}>
+                <div className="name" onClick={() => this.handleShowIng(i)}>
+                  <h2>{recipe.name}</h2>
+                </div>
+                { (this.state.showRecipes[i])? <div className="recipeBody">
+                  <Ingredients ingredients={recipe.ingredients.split(',')} />
+                  <DeleteRecipeButton onClick={() => this.handleDelete(i)} />
+                  <EditRecipeButton onClick={() => this.handleEditBtn(i)} />
+                </div> : <br/>
+                }
+
+              </div>)})
+           }
+          </div>
+          <AddRecipeButton onClick={() => this.handleAddRecipeView()}/>
           {(this.state.showAddRecipe) ? <AddRecipe
             onClickAddRecipe={(fields) => this.handleAddRecipe(fields)}
             cancel={() => this.handleCloseAddRecipe()}
             showAddRecipe={this.state.showAddRecipe}
             /> : <div></div>}
+          {(this.state.showEditRecipe)? <EditRecipeForm actualRecipe={this.state.recipes[this.state.editIndex]} onClickEditRecipe={(fields) => this.handleEditRecipe(fields)} cancel={() => this.handleCloseEditRecipe()} /> : <div></div> }
           <Footer />
         </div>
-        ) } }
-
-/* Arriba, fue necesario incluir (fields)  en <AddRecipe onClickAddRecipe={(fields) => ... */
-
-/* Arriba, ver cómo escribir un método que maneje en general el mostrar y dejar de mostrar un componente, según sea el que se indique y usarlo para Add y Edit */
+      ) // return
+   } // render
+} // Page
 
 function Header(props) {
   return (
@@ -139,35 +139,6 @@ function Footer(props) {
   )
 }
 
-function RecipesList(props) {
-  if (props.recipes && props.recipes.length > 0) {
-      return (
-        <div className="recipesList">
-        { props.recipes.map((recipe, i) => { return (
-            <Recipe
-              name={recipe.name}
-              ingredients={recipe.ingredients}
-              onClickShowIng={() => props.handleOnClickShowIng(i)}
-              showIng={props.showRecipes[i]}
-              showEditRecipe={props.showEditRecipe}
-              key={recipe.name + i}
-              onClickDelete={() => props.handleOnClickDelete(i)}
-              onClickEdit={() => props.handleOnClickEdit(i)}
-              onClickEditRecipe={(fields) => props.handleEditRecipe(fields)}
-              cancel={() => props.cancel()}
-            /> ) } )
-        }
-        </div>
-      )
-  } else {
-    return (
-      <div className="recipesList">
-        <p>'No recipes yet.'</p>
-      </div>
-    )
-  }
-}
-
 function AddRecipeButton(props) {
   return <Button classN="add-recipe-btn" onClick={() => props.onClick()} value="Add recipe" />
 }
@@ -175,7 +146,6 @@ function AddRecipeButton(props) {
 function DeleteRecipeButton(props){
     return <Button classN="delete-btn" onClick={() => props.onClick()} value="Delete" />
 }
-
 
 function EditRecipeButton(props){
     return <Button classN="edit-btn" onClick={() => props.onClick()} value="Edit" />
@@ -187,41 +157,6 @@ function Button(props){
       {props.value}
     </button>
   )
-}
-
-function Recipe(props){
-  return (
-    <div className="recipe">
-      <div className="name" onClick={props.onClickShowIng}>
-        <h2>{props.name}</h2>
-      </div>
-      <RecipeBody
-        ingredients={props.ingredients}
-        onClickDelete={props.onClickDelete}
-        onClickEdit={props.onClickEdit}
-        showIng={props.showIng}
-        />
-
-      {(props.showEditRecipe) ? <EditRecipe
-            onClickEditRecipe={(fields) => props.onClickEditRecipe(fields)}
-            cancel={() => props.cancel()}
-            showEditRecipe={props.showEditRecipe}
-            /> : <div></div>}
-
-    </div>
-  )
-}
-
-function RecipeBody(props){
-  if (props.showIng === true) {
-    return (<div className="recipeBody">
-      <Ingredients ingredients={props.ingredients.split(',')} />
-      <DeleteRecipeButton onClick={props.onClickDelete} />
-      <EditRecipeButton onClick={props.onClickEdit} />
-    </div>
-  )} else {
-      return <div className="recipeBody"></div>
-    }
 }
 
 function Ingredients (props) {
@@ -244,23 +179,6 @@ function AddRecipe(props) {
      }
   }
 
-/* ¿Podría haber algo más genérico que sirva para Add y Edit ? */
-
-function EditRecipe(props) {
-   if (props.showEditRecipe){
-      return (
-        <div className="editRecipeForm">
-          <EditRecipeForm actualRecipe={props.actualRecipe} onClickEditRecipe={props.onClickEditRecipe} cancel={props.cancel} />
-        </div>
-      )
-   } else {
-     return <div className="editRecipeForm"></div>
-   }
-}
-
-
-
-
 /* https://reactjs.org/docs/forms.html */
 /* How to code a form in React - https://www.youtube.com/watch?v=qH4pJISKeoI */
 class AddRecipeForm extends React.Component {
@@ -271,7 +189,6 @@ class AddRecipeForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  /* To update the state while the user types */
   handleChange(event) {
     this.setState({
       [event.target.name]: event.target.value
@@ -279,7 +196,7 @@ class AddRecipeForm extends React.Component {
   }
 
   handleSubmit(event) {
-    this.props.onClickAddRecipe(this.state); // Por acá le pasa los datos al componente de una jerarquía superior, this.state serían los fields (y a la vez deja de mostrarse el recuadro porque esta función pone en false el estado showAddRecipe. ¿Está bien hacerlo así?)
+    this.props.onClickAddRecipe(this.state);
     event.preventDefault();
   }
 
@@ -313,49 +230,7 @@ class AddRecipeForm extends React.Component {
       </form>
     );
   }
-          /* Fue necesario incluir () luego de this.props.cancel, de otra manera ejecutaba el handleSubmit
-¿Por qué acá sí es necesario y en otras partes es necesario no incluirlo?
-        */
 }
-
-/* Recuperar el estado de los campos de la receta. De algún lado le tiene que venir el índice de qué receta es o algo así, o directamente que se pasen los datos de la receta y después se asignen al estado de EditRecipeForm
-*/
-
-
-/* Si puedo usar recipeform tanto para edit como para add, cuando sea add, habrá que pasarle a recipeform un actualrecipe con name e ingredientes '' */
-/* No funciona bien lo de abajo */
-
-function RecipeForm(props) {
-  return (
-      <form onSubmit={props.handleSubmit}>
-        <div>
-        <label>
-          Name:
-          <input
-            name="name"
-            type="text"
-            value={props.actualRecipe.name}
-            onChange={props.handleChange}
-          />
-        </label>
-          </div>
-        <div>
-        <label>
-          Ingredients:
-          <input
-            name="ingredients"
-            type="text"
-            value={props.actualRecipe.ingredients}
-            onChange={props.handleChange}
-          />
-        </label>
-          </div>
-        <input type="submit" value="Submit"/>
-        <button onClick={() => props.cancel() }>Cancel</button>
-      </form>
-  )
-}
-
 
 class EditRecipeForm extends React.Component {
   constructor(props) {
@@ -365,7 +240,6 @@ class EditRecipeForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-   // To update the state while the user types
   handleChange(event) {
     this.setState({
       [event.target.name]: event.target.value
@@ -373,20 +247,47 @@ class EditRecipeForm extends React.Component {
   }
 
   handleSubmit(event) {
-    this.props.onClickAddRecipe(this.state); // Por acá le pasa los datos al componente de una jerarquía superior, this.state serían los fields (y a la vez deja de mostrarse el recuadro porque esta función pone en false el estado showAddRecipe. ¿Está bien hacerlo así?)
+    const fields = {name: this.state.name, ingredients: this.state.ingredients}
+    this.props.onClickEditRecipe(fields);
     event.preventDefault();
   }
 
   render() {
     return (
-      <div>
-        <p>Edit recipe: {this.state.name}</p>
-        <RecipeForm name={this.state.name} ingredients={this.state.ingredients} handleChange={this.handleChange} handleSubmit={this.handleSubmit} />
+      <div className="editRecipeForm">
+        <p>Edit recipe:</p>
+        <form onSubmit={this.handleSubmit}>
+        <div>
+        <label>
+          Name:
+          <input
+            name="name"
+            type="text"
+            placeholder={this.props.actualRecipe.name}
+            value={this.state.name}
+            onChange={this.handleChange}
+          />
+        </label>
+          </div>
+        <div>
+        <label>
+          Ingredients:
+          <input
+            name="ingredients"
+            type="text"
+            placeholder={this.props.actualRecipe.ingredients}
+            value={this.state.ingredients}
+            onChange={this.handleChange}
+          />
+        </label>
+          </div>
+        <input type="submit" value="Submit"/>
+        <button onClick={() => this.props.cancel() }>Cancel</button>
+      </form>
       </div>
     );
   }
 }
-
 
 ReactDOM.render(
   <Page/>, document.getElementById('root') );
