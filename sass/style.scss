@@ -58,21 +58,35 @@ body {
 }
 
 .newRecipeForm {
-    position: absolute;
-    background: $rosaChicle;
-    color: $mainBackground;
-    width: 60%;
-    /* height: 100px; */
-    top: 30%;
-    left: 20%;
-    z-index: 1;
-    box-shadow: 0 0 1em 1em #ccc;
+  position: absolute;
+  background: $rosaChicle;
+  color: $mainBackground;
+  width: 60%;
+  /* height: 100px; */
+  top: 30%;
+  left: 20%;
+  z-index: 1;
+  box-shadow: 0 0 .1em .2em #727;
+  padding: 15px;
 }
 
 .delete-btn {
   background-color: $danger;
+  color: white;
+  border-color: darkred;
 }
 
 .edit-btn {
   background-color: lightgreen;
+  border-color: darkgreen;
+}
+
+.btn {
+  font-size: 14px;
+  padding: 10px;
+  margin: 5px;
+  box-shadow: 0.1em 0.1em 0.4em 0.1em #555;
+  border-radius: 2px;
+  border: 1px;
+  font-weight: bold;
 }

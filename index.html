@@ -159,17 +159,17 @@ function AddRecipeButton(props) {
 }
 
 function DeleteRecipeButton(props){
-    return <Button classN="delete-btn" onClick={() => props.onClick()} value="Delete recipe" />
+    return <Button classN="delete-btn" onClick={() => props.onClick()} value="Delete" />
 }
 
 
 function EditRecipeButton(props){
-    return <Button classN="edit-btn" onClick={() => props.onClick()} value="Edit recipe" />
+    return <Button classN="edit-btn" onClick={() => props.onClick()} value="Edit" />
 }
 
 function Button(props){
   return (
-    <button className={props.classN} onClick={props.onClick}>
+    <button className={props.classN + " btn"} onClick={props.onClick}>
       {props.value}
     </button>
   )
@@ -286,9 +286,8 @@ class AddRecipeForm extends React.Component {
           />
         </label>
           </div>
-        <input type="submit" value="Submit"/>
-        <button onClick={() => this.props.cancel() }>Cancel</button>
-        <div>Nombre: {this.state.name}, Ingredientes: {this.state.ingredients}</div>
+        <input className="btn" type="submit" value="Submit"/>
+        <button className="btn" onClick={() => this.props.cancel() }>Cancel</button>
       </form>
     );
   }
