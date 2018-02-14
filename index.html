@@ -47,22 +47,15 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
         this.setState({ showRecipes : showRecipes, recipes: recetas })
     }
 
-    handleOnClickEdit(i) {
-      alert('Editing ' + this.state.recipes[i].name);
-    }
-
     handleOnClickShowIng(i) {
       const showRecipes = this.state.showRecipes.slice(); // copia el array
       showRecipes[i] = !showRecipes[i];
       this.setState({ showRecipes : showRecipes });
     }
 
+    // Add
     handleOnClickAddRecipeView() {
       this.setState({ showAddRecipe : true });
-    }
-
-    handleOnClickEditRecipeView() {
-      this.setState({ showEditRecipe : true });
     }
 
     handleCloseAddRecipe() {
@@ -78,6 +71,26 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
         showAddRecipe : false
       });
    }
+
+  // Edit
+  handleOnClickEdit(i) {
+    //alert('Editing ' + this.state.recipes[i].name);
+    this.setState({ showEditRecipe : true });
+  }
+  handleCloseEditRecipe() {
+    this.setState({ showEditRecipe : false });
+  }
+  handleEditRecipe(fields, i) {
+    const newRecipe = {name: fields.name, ingredients: fields.ingredients };
+    // tenés que utilizar el i que ya tenés que saber y que se lo pasás acá de alguna manera
+    const recetas = this.state.recipes.slice();
+    recetas[i] = newRecipe;
+    localStorage.setItem("recipes", JSON.stringify(recetas));
+    this.setState({
+      recipes: recetas,
+      showEditRecipe : false
+    });
+  }
 
    render() {
       return (
@@ -96,6 +109,11 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
             cancel={() => this.handleCloseAddRecipe()}
             showAddRecipe={this.state.showAddRecipe}
             /> : <div></div>}
+          {(this.state.showEditRecipe) ? <EditRecipe
+            onClickEditRecipe={(fields, i) => this.handleEditRecipe(fields)}
+            cancel={() => this.handleCloseEditRecipe()}
+            showEditRecipe={this.state.showEditRecipe}
+            /> : <div></div>}
           <Footer />
         </div>
         ) } }
@@ -103,14 +121,6 @@ https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstor
 /* Arriba, fue necesario incluir (fields)  en <AddRecipe onClickAddRecipe={(fields) => ... */
 
 /* Arriba, ver cómo escribir un método que maneje en general el mostrar y dejar de mostrar un componente, según sea el que se indique y usarlo para Add y Edit */
-
-
-/*           <EditRecipe
-            onClickEditRecipe={(fields) => this.handleEditRecipe(fields)}
-            cancel={()=> this.handleCloseEditRecipe() }
-            showEditRecipe={this.state.showEditRecipe}
-            />
-            */
 
 function Header(props) {
   return (
@@ -224,20 +234,18 @@ function AddRecipe(props) {
   }
 
 /* ¿Podría haber algo más genérico que sirva para Add y Edit ? */
-/*
-  function EditRecipe(props) {
-          if (props.showEditRecipe){
-            return (
-            <div className="EditRecipeForm">
-                <AddRecipeForm onClickEditRecipe={props.onClickEditRecipe} cancel={props.cancel} />
-            </div>
-            )
-          } else {
-            return
-            <div className="EditRecipeForm"></div>
-          }
-  }
-*/
+
+function EditRecipe(props) {
+   if (props.showEditRecipe){
+      return (
+        <div className="editRecipeForm">
+          <AddRecipeForm onClickEditRecipe={props.onClickEditRecipe} cancel={props.cancel} />
+        </div>
+      )
+   } else {
+     return <div className="editRecipeForm"></div>
+   }
+}
 
 /* https://reactjs.org/docs/forms.html */
 /* How to code a form in React - https://www.youtube.com/watch?v=qH4pJISKeoI */
@@ -297,6 +305,7 @@ class AddRecipeForm extends React.Component {
 }
 
 /* Recuperar el estado de los campos de la receta. De algún lado le tiene que venir el índice de qué receta es o algo así, o directamente que se pasen los datos de la receta y después se asignen al estado de EditRecipeForm
+*/
 
 class EditRecipeForm extends React.Component {
   constructor() {
@@ -349,11 +358,11 @@ class EditRecipeForm extends React.Component {
       </form>
     );
   }
-} */
+}
 
 
-        ReactDOM.render(
-        <Page/>, document.getElementById('root') );
+ReactDOM.render(
+  <Page/>, document.getElementById('root') );
 
 
 // Auxiliar

@@ -38,7 +38,7 @@ body {
     border: 1px solid #FF7D9B;
     background: purple; }
 
-.newRecipeForm {
+.newRecipeForm, .editRecipeForm {
   position: absolute;
   background: #FF7D9B;
   color: purple;
