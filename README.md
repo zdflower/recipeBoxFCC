@@ -2,12 +2,12 @@
 
 Visit [https://zdflower.github.io/recipeBoxFCC/](https://zdflower.github.io/recipeBoxFCC/) (In progress) 
 
-## Comentarios
+## Comments
 
-En un primer momento quise separar en componentes, generalizar algunos para luego aplicar a casos particulares, reutilizando código, pero fallé estrepitosamente pues aún no desentrañé cómo hacer para lograr el funcionamiento deseado.
-Mientras tanto, escribí una versión donde el componente Page renderea casi todo directamente y hay bastante redundancia.
-Se pueden crear nuevas recetas, se pueden borrar, se guardan en el localStorage, se puede editar una receta existente.
-Sobre la función de editar: me gustaría mejorarla, que realmente pudiera editarse en el sentido de poder reutilizar el contenido existente y no reemplazarlo completamente por otro, como cuando se edita un texto en un procesador y no se tiene que volver a escribir de cero.
+At the begining I wanted to divide the page into components, generalize some for then apply that to particular cases, reuse code, etc. but failed huge because yet I didn't figure it out how to get the what I was looking for. 
+In the meantime, I wrote a version where the Page component renders almost all directly and there is repeated code in some places.
+You can create new recipes, delete a recipe, store them in the local storage and edit an existing recipe.
+In the first version the editing was not quite ok, but finally I find out how to properly edit a recipe and make a small change in EditForm (assign the name and the ingredients of the recipe to the state of the EditForm instead of using placeholder in the form).
 
 ## User stories
 
