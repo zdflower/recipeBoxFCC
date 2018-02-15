@@ -229,7 +229,7 @@ class AddRecipeForm extends React.Component {
 class EditRecipeForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {name: '', ingredients: ''};
+    this.state = {name: this.props.actualRecipe.name, ingredients: this.props.actualRecipe.ingredients};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -257,7 +257,6 @@ class EditRecipeForm extends React.Component {
           <input
             name="name"
             type="text"
-            placeholder={this.props.actualRecipe.name}
             value={this.state.name}
             onChange={this.handleChange}
           />
@@ -269,7 +268,6 @@ class EditRecipeForm extends React.Component {
           <input
             name="ingredients"
             type="text"
-            placeholder={this.props.actualRecipe.ingredients}
             value={this.state.ingredients}
             onChange={this.handleChange}
           />
